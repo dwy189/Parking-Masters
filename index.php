@@ -45,13 +45,12 @@
 	    $Park_Time = "2016-05-01 12:30:01";
 	    $CurrentTimeDate = strtotime($row["time"]);
 	    $OriginalTimeDate = strtotime($Park_Time);
-	    // Convert duration from second to hour
+	    // Convert duration from second to hour:min:second
 	    $difference = ($CurrentTimeDate - $OriginalTimeDate);
 	    $differenceInHours = floor($difference / 3600);
 	    $differenceInMinutes = floor(($difference / 60) % 60);
 	    $differenceInSeconds = $difference % 60;
-    
-
+  	    // Determine whether the spot is occupied. 
  	    if ($row["distance"] <= 25) {
 	        $occupied = "Yes";
     	        $Parking_Duration = "$differenceInHours:$differenceInMinutes:$differenceInSeconds";
@@ -60,9 +59,6 @@
 	        $Park_Time = "";
 	        $Parking_Duration = "";
 	    }
-
-	    // $Parking_Duration = "2h";
-	    // $Park_Time = "2000-01-01 00:00:01";
 	    echo "<tr><td>" . $row["lot_id"] . "</td><td>" . $row["time"] .
 	         "</td><td>" . $occupied . "</td><td>" . $row["distance"] . "</td><td>" . $Parking_Duration . "</td><td>" . $Park_Time . "</td></tr>";
         }
