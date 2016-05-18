@@ -30,20 +30,20 @@
     }
 
     // Setup the local time in Seattle. Converted from UTC to PDT.
-    $timeSql = "SET time_zone = '-7:00';";
-    $conn->query($timeSql);
+    $changeTimeZoneSql = "SET time_zone = '-7:00';";
+    $conn->query($changeTimeZoneSql);
     // Query the mysql database
-    $sql = "SELECT * FROM parkingInfo ORDER BY lot_id ASC;";
+    $sql = "SELECT * FROM parkingInfo ORDER BY lot_id ASC, time ASC;";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-    echo "<center><table><tr><th>Spot ID</th><th>Time Updated</th><th>Occupied</th>
-          <th>Distance(Inches)</th><th>Parking Duration(hh:mm:ss)</th><th>Park Time</th><th>Need to recharge</th></tr>";
+    echo "<center><table><tr><th>Spot ID</th><th>Time Updated</th><th>Spot Empty</th>
+          <th>Distance(Inches)</th><th>Parking Duration(h:m:s)</th><th>Park Time</th><th>Need to recharge</th></tr>";
 	// output data of each row
 	while ($row = $result->fetch_assoc()) {
 	    //$oDate = date('Y-m-d H:i:s', $row[currentTime]);
 	    //$sDate = date('Y-m-d H:i:s', strtotime($row["currentTime"]);  // converted time format
-	    $Park_Time = "2016-05-16 12:30:01";
+	    $Park_Time = "2016-05-02 12:30:01";
 	    $CurrentTimeDate = strtotime($row["time"]);
 	    $OriginalTimeDate = strtotime($Park_Time);
 	    // Convert duration from second to hour:min:second
@@ -53,26 +53,27 @@
 	    $differenceInSeconds = $difference % 60;
 	    $parkedOverADay = "";
             $recharge = "Yes";
-	    // determines if the car has been parked over a day. 
-	    //if ($difference > $secondInADay) {
-	    //	$parkedOverADay = "(Parked over a day)";
-    	    //}
+	    
+	    // determines if the car has been parked over a day.     	    
   	    // Determine whether the spot is occupied. 
  	    if ($row["distance"] <= 25) {
-	        $occupied = "Yes";
+	        $emptySpot = "No";
 		$occupiedColor = "red";
     	        $Parking_Duration = "$differenceInHours:$differenceInMinutes:$differenceInSeconds";
-		if ($difference > $secondInADay) {
+		/*if ($difference > $secondInADay) {
 		   $parkedOverADay = " (Parked over a day)";
-		}
+		} else {
+		   $parkedOverADat = "";
+		}*/
+
 	    } else {
-    	        $occupied = "No";
+    	        $emptySpot = "Yes";
 		$occupiedColor = "green";
 	        $Park_Time = "";
 	        $Parking_Duration = "";
 	    }
 	    echo "<tr><td>" . $row["lot_id"] . "</td><td>" . $row["time"] .
-	         "</td><td><font color='" . $occupiedColor . "'>" . $occupied . "</font></td><td>" . $row["distance"] . "</td><td>" . $Parking_Duration . $difference ."</td><td>" . $Park_Time . "</td><td><font color='red'>" . $recharge . "</font></td></tr>";
+	         "</td><td><font color='" . $occupiedColor . "'>" . $emptySpot . "</font></td><td>" . $row["distance"] . "</td><td>" . $Parking_Duration . $parkedOverADay . "</td><td>" . $Park_Time . "</td><td><font color='red'>" . $recharge . "</font></td></tr>";
         }
         echo "</table></center>";
     } else {
