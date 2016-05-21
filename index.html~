@@ -19,46 +19,28 @@
 
   <body>
     <script type="text/javascript">
-      
-
-
-      
       var w = 1200;
       var h = 400;
       var svg = d3.select("body")
       .append("svg")
       .attr("width", w)
       .attr("height", h);
-/*
-      var background = d3.select("svg")
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", w)
-      .attr("height", h)
-      .attr("fill", "black")
-*/
 
-      var spotdata = [1,2,3,4,5,6,7,8]
-      var spots = svg.selectAll("circle")
-      .data(spotdata)
+      var dataset = [5, 10, 15, 20, 25];
+      var circles = svg.selectAll("circle")
+      .data(dataset)
       .enter()
       .append("circle");
 
-      spots.attr("cx", function(d,i){
-      return i*150 + 100;
-      })
-      .attr("cy", 80)
-      .attr("r", 20)
-      .attr("fill", "blue");
+      circles.attr("cx", function(d,i){
+      return (i * 50) + 25;
+      ))
+      .attr("cy", h/2)
+      .attr("r", function(d){
+      return d;
+      });
 
-      
+
     </script>
   </body>
-  <p>
-    <center>
-      <a href="http://173.250.246.144/devel.php">See Detail Stat</a>
-    </center>
-  </p>
-  
 </html>

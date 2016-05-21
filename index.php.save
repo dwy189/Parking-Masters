@@ -8,57 +8,84 @@
       text-align:center;
       }
     </style>
-<?php
-$servername = "localhost";
-$username = "root";
-$password = "pmasters1234";
-$dbname = "ParkingInfo";
+    <?php
+       // Auto refresh the page every 60 seconds.
+       $ipAddress = '173.250.246.144';
+       $secondsInADay = 86400;
+       $url1=$_SERVER[$ipAddress];
+       header("Refresh: 60; URL=$url1");
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+       $servername = "localhost";
+       $username = "root";
+       $password = "pmasters1234";
+       $dbname = "ParkingInfo";
 
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-  exit();
-}
+       // Create connection
+       $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Setup the local time in Seattle. Converted from UTC to PDT. 
-$timeSql = "SET time_zone = '-7:00';";
-$conn->query($timeSql);
-// Query the mysql database
-$sql = "SELECT * FROM parkingInfo ORDER BY lot_id ASC;";
-	$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-  echo "<center><table><tr><th>Spot ID</th><th>Time Updated</th><th>Occupied</th>
-        <th>Distance(Inches)</th><th>Parking Duration</th><th>Park Time</th></tr>";
-  // output data of each row
-  while ($row = $result->fetch_assoc()) {
-    //$oDate = date('Y-m-d H:i:s', $row[currentTime]);
-    //$sDate = date('Y-m-d H:i:s', strtotime($row["currentTime"]);  // converted time format
-    $Parking_Duration = "2h";
-    $Park_Time = "2016-05-01 00:00:01";/    $CurrentTimeDate = new DateTime("h:i", date(strtotime($row["time"])));
-    if ($row["distance"] <= 25) {
-    	$occupied = "Yes";
-    	
-    } else {
-    	$occupied = "No";
-	$Park_Time = "";
-	$Parking_Duration = "";
+       // Check connection
+       if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+    exit();
     }
-    
-   // $Parking_Duration = "2h";
-   // $Park_Time = "2000-01-01 00:00:01";
-    echo "<tr><td>" . $row["lot_id"] . "</td><td>" . $row["time"] .
-      "</td><td>" . $occupied . "</td><td>" . $row["distance"] . "</td><td>" . $Parking_Duration . "</td><td>" . $Park_Time . "</td></tr>";
-  }
-  echo "</table></center>";
-} else {
-  echo "0 results";
-}
-$conn->close();
-?>
 
+    // Setup the local time in Seattle. Converted from UTC to PDT.
+    $changeTimeZoneSql = "SET time_zone = '-7:00';";
+    $conn->query($changeTimeZoneSql);
+    // Query the mysql database
+    $sql = "SELECT * FROM parkingInfo ORDER BY lot_id, time;";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+    echo "<center><table><tr><th>Spot ID</th><th>Time Updated</th><th>Spot Empty</th>
+          <th>Distance(Inches)</th><th>Parking Duration(h:m:s)</th><th>Park Time</th><th>Need to recharge</th></tr>";
+	$map = new SplObjectStorage();
+	// output data of each row
+	while ($row = $result->fetch_assoc()) {
+	    //$oDate = date('Y-m-d H:i:s', $row[currentTime]);
+	    //$sDate = date('Y-m-d H:i:s', strtotime($row["currentTime"]);  // converted time format
+	    $Park_Time = "2016-05-02 12:30:01";
+	    $CurrentTimeDate = strtotime($row["time"]);
+	    $OriginalTimeDate = strtotime($Park_Time);
+	    // Convert duration from second to hour:min:second
+	    $difference = ($CurrentTimeDate - $OriginalTimeDate);
+	    $differenceInHours = floor($difference / 3600);
+	    $differenceInMinutes = floor(($difference / 60) % 60);
+	    $differenceInSeconds = $difference % 60;
+	    $parkedOverADay = "";
+            $recharge = "Yes";
+	    
+	    // determines if the car has been parked over a day. 
+  	    // Determine whether the spot is occupied. 
+ 	    if ($row["distance"] <= 25) {
+	        $emptySpot = "No";
+		$occupiedColor = "red";
+    	        $Parking_Duration = "$differenceInHours:$differenceInMinutes:$differenceInSeconds";
+		/*if ($difference > $secondInADay) {
+		   $parkedOverADay = " (Parked over a day)";
+		} else {
+		   $parkedOverADat = "";
+		}*/
+
+	    } else {
+    	        $emptySpot = "Yes";
+		$occupiedColor = "green";
+	        $Park_Time = "";
+	        $Parking_Duration = "";
+	    }
+	// Determines the parking duration at the spot
+	if ($map->contains($row["lot_id"])) {
+	   
+	}
+	    echo "<tr><td>" . $row["lot_id"] . "</td><td>" . $row["time"] .
+	         "</td><td><font color='" . $occupiedColor . "'>" . $emptySpot . "</font></td><td>" . $row["distance"] . "</td><td>" . $Parking_Duration . $parkedOverADay . "</td><td>" . $Park_Time . "</td><td><font color='red'>" . $recharge . "</font></td></tr>";
+        }
+        echo "</table></center>";
+    } else {
+        echo "0 results";
+    }
+    				    
+    $conn->close();
+    ?>
   </body>
 </html>
