@@ -1,7 +1,8 @@
 <?php
     // Auto refresh the page every 60 seconds.
     $ipAddress = '173.250.246.144';
-    $url1=$_SERVER[$ipAddress];
+    $rounterIpAddress = '192.168.1.147';
+    $url1=$_SERVER[$rounterIpAddress];
     header("Refresh: 60; URL=$url1");
 
     $servername = "localhost";

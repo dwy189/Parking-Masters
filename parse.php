@@ -5,7 +5,7 @@
     <div id="id01"></div>
     <script>
       var xmlhttp = new XMLHttpRequest();
-      var url = "http://173.250.246.144/data.php";
+      var url = "/data.php";
 
       xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {

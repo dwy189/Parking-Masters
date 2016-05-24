@@ -19,7 +19,7 @@
   <body>
       
   <?php
-     $json_file = file_get_contents('http://173.250.246.144/data.php');
+     $json_file = file_get_contents('http://localhost/data.php');
      $jfo = json_decode($json_file, true);
      # var_dump($jfo);
 
@@ -59,7 +59,7 @@
 				  
   <p>
     <center>
-      <a href="http://173.250.246.144/">Back To Main Page</a>
+      <a href="/">Back To Main Page</a>
     </center>
   </p>
 

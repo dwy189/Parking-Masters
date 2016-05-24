@@ -15,7 +15,7 @@
 
       /*
       var xmlhttp = new XMLHttpRequest();
-      var url = "http://173.250.246.144/data.php";
+      var url = "/data.php";
 
       var idVal = [];
       xmlhttp.onreadystatechange = function() {
@@ -60,11 +60,12 @@
         .size([w,h]);
 				 
 
-      d3.json("http://173.250.246.144/data.php", function(error, dataset){
+      d3.json("/data.php", function(error, dataset){
          force
          .nodes(dataset)
          .start();
-         				 
+
+				 
 	 var spots = svg.selectAll(".circle")
          .data(dataset)
          .enter()
@@ -79,14 +80,14 @@
 	 })
 	.attr("r", 20)
 	.attr("stroke", function(d){
-	   if (d.voltage <= 3.0)
+	   if (d.voltage >= 3.0)
               return "blue";
            else
 	      return "yellow";		    
 	 })
          .attr("stroke-width", 15px)
 	 .attr("fill", function(d){
-            if (d.distance <= 25)
+            if (d.distance <= 50)
                return "red";
             else
                return "green";
@@ -94,14 +95,14 @@
         */
 	 spots.attr("r", 40)
          .attr("stroke", function(d){
-	   if (d.voltage <= 3.0)
+	   if (d.voltage >= 3.0)
               return "blue";
            else
 	      return "yellow";		    
 	 })
 	 .attr("stroke-width", 5)
 	 .attr("fill", function(d){
-            if (d.distance <= 25)
+            if (d.distance <= 50)
                return "red";
             else
                return "green";
@@ -115,20 +116,29 @@
                    .data(dataset)
                    .enter()
                    .append("text")
-                   .text(function(d){return d.lot_id;})
-                   .call(force.drag);
+	           .text(function(d){
+                      var wrap = "";
+	              if (Math.floor(d.lot_id / 100) == 0){
+                         if (Math.floor(d.lot_id / 10) == 0){
+			    wrap = "00";
+		         } else {   
+                            wrap = "0";
+			 }
+                      } 
+                      return wrap + d.lot_id;})
+		   .call(force.drag);
 			      
 	 force.on("tick", function(){
             spots.attr("cx", function(d){return d.x;})
 	         .attr("cy", function(d){return d.y;});
             
-            num.attr("x", function(d){return d.x - 30;})
-	       .attr("y", function(d){return d.y + 10;})
+            num.attr("x", function(d){return d.x - 34;})
+	       .attr("y", function(d){return d.y + 15;})
                .attr("font-family", "sans-serif")
                .attr("font-size", "40px")
 	       .attr("font-weight", "bold")	      
 	       .attr("fill", "purple");
-			      
+	      
 	 });
 			      
        });
@@ -158,7 +168,7 @@
     
   <p>
     <center>
-      <a href="http://173.250.246.144/devel.php">See Detail Stat</a>
+      <a href="/devel.php">See Detail Stat</a>
     </center>
   </p>
   
